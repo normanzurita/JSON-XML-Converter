@@ -1,13 +1,9 @@
 package converter;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class JSONConverter extends Converter {
 
@@ -23,9 +19,9 @@ public class JSONConverter extends Converter {
         }
     }
 
-    public static void sanitizeNode(JSONNode node) {
-        JSONNode valueNode = null;
-        for (JSONNode childNodes : node.getNodes()) {
+    public static void sanitizeNode(Node node) {
+        Node valueNode = null;
+        for (Node childNodes : node.getNodes()) {
             if (childNodes.getKey().equals("#" + node.getKey())) {
                 valueNode = childNodes;
                 break;
@@ -34,7 +30,7 @@ public class JSONConverter extends Converter {
 
         boolean isValueObject = (valueNode != null);
 
-        for (JSONNode childNode : node.getNodes()) {
+        for (Node childNode : node.getNodes()) {
             if (childNode == valueNode) {
                 continue;
             }
@@ -43,7 +39,7 @@ public class JSONConverter extends Converter {
                 break;
             }
         }
-        for (JSONNode childNode : node.getNodes()) {
+        for (Node childNode : node.getNodes()) {
             if (childNode.getKey().startsWith("@")) {
                 if (!childNode.getNodes().isEmpty()) {
                     childNode.setKey(childNode.getKey().substring(1));
@@ -53,16 +49,16 @@ public class JSONConverter extends Converter {
         }
 
         if (isValueObject) {
-            List<JSONNode> nodesToRemove = new ArrayList<>();
+            List<Node> nodesToRemove = new ArrayList<>();
             if (valueNode.getNodes().isEmpty()) {
                 node.setValue(valueNode.getValue());
             } else {
                 node.setValue(null);
-                for (JSONNode childNodes : valueNode.getNodes()) {
+                for (Node childNodes : valueNode.getNodes()) {
                     node.getNodes().add(childNodes);
                 }
             }
-            for (JSONNode childNode : node.getNodes()) {
+            for (Node childNode : node.getNodes()) {
                 if (childNode.getKey().startsWith("@")) {
                     if (childNode.getValue().trim().equals("null")) {
                         childNode.setValue("");
@@ -74,13 +70,13 @@ public class JSONConverter extends Converter {
             nodesToRemove.add(valueNode);
             node.getNodes().removeAll(nodesToRemove);
         } else {
-            List<JSONNode> nodesToRemove = new ArrayList<>();
+            List<Node> nodesToRemove = new ArrayList<>();
 
-            for (JSONNode childNode : node.getNodes()) {
+            for (Node childNode : node.getNodes()) {
                 if (childNode.getKey().startsWith("#") || childNode.getKey().startsWith("@")) {
                     boolean alreadyExists = false;
                     String newKey = childNode.getKey().substring(1);
-                    for (JSONNode subNodes : node.getNodes()) {
+                    for (Node subNodes : node.getNodes()) {
                         if (newKey.equals(subNodes.getKey())) {
                             alreadyExists = true;
                             break;
@@ -109,7 +105,7 @@ public class JSONConverter extends Converter {
         }
 
         if (!node.getNodes().isEmpty()) {
-            for (JSONNode childNodes : node.getNodes()) {
+            for (Node childNodes : node.getNodes()) {
                 sanitizeNode(childNodes);
             }
         }
@@ -117,7 +113,7 @@ public class JSONConverter extends Converter {
     }
 
 
-    public static void printNode(JSONNode node, String path, PrintStream out) {
+    public static void printNode(Node node, String path, PrintStream out) {
         out.println("Element:");
         if (path.isEmpty()) {
             path = node.getKey();
@@ -136,20 +132,20 @@ public class JSONConverter extends Converter {
         }
         out.println();
 
-        for (JSONNode childNodes : node.getNodes()) {
+        for (Node childNodes : node.getNodes()) {
             printNode(childNodes, path, out);
         }
     }
 
-    public static JSONNode recursiveJSON(String input, String path) {
+    public static Node recursiveJSON(String input, String path) {
         List<String> listOfSubNodes = new ArrayList<>();
         List<String> listOfNodesInJSON = new ArrayList<>();
-        JSONNode node = new JSONNode();
+        Node node = new Node();
         node.setValue(input.replace("\n", ""));
         listOfNodesInJSON = splitByTags(input);
 
         for (String s : listOfNodesInJSON) {
-            JSONNode childNode;
+            Node childNode;
             String tag = s.substring(1, s.indexOf("\"", 1));
             String value = s.substring(s.indexOf(":") + 1);
             assert tag != null;
@@ -160,7 +156,7 @@ public class JSONConverter extends Converter {
                 childNode.setKey(tag);
                 node.getNodes().add(childNode);
             } else {
-                childNode = new JSONNode();
+                childNode = new Node();
                 childNode.setValue(value);
                 childNode.setKey(tag);
                 node.getNodes().add(childNode);
@@ -239,16 +235,16 @@ public class JSONConverter extends Converter {
     }
 
     @Override
-    public String convert(String input) {
-        JSONNode node = recursiveJSON(input, "");
+    public Node convert(String input) {
+        Node node = recursiveJSON(input, "");
         sanitizeNode(node);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream printOut = new PrintStream(out);
-        for (JSONNode childNode : node.getNodes()) {
-            StringBuilder sb = new StringBuilder();
-
-            printNode(childNode, "", printOut);
-        }
-        return out.toString();
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        PrintStream printOut = new PrintStream(out);
+//        for (Node childNode : node.getNodes()) {
+//            StringBuilder sb = new StringBuilder();
+//
+//            printNode(childNode, "", printOut);
+//        }
+        return node;
     }
 }

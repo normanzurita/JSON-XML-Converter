@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class JSONNode {
+public class Node {
 
     private String key;
     private String value;
     private Map<String, String> attributes;
-    private List<JSONNode> nodes;
+    private List<Node> nodes;
     private Map<String, String> keysAndValues;
 
-    public JSONNode() {
+    public Node() {
         this.nodes = new ArrayList<>();
         this.attributes = new TreeMap<>();
     }
@@ -26,11 +26,11 @@ public class JSONNode {
         this.attributes = attributes;
     }
 
-    public List<JSONNode> getNodes() {
+    public List<Node> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<JSONNode> nodes) {
+    public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
     }
 
@@ -55,7 +55,7 @@ public class JSONNode {
     public String toString() {
 
         StringBuilder str = new StringBuilder();
-        str.append("JSONNode{");
+        str.append("Node{");
         str.append("key='" + key + '\'');
 
         if (nodes.size() > 0) {

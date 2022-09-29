@@ -141,7 +141,7 @@ public class XMLConverter extends Converter {
     }
 
     @Override
-    public String convert(String input) {
+    public Node convert(String input) {
         return null;
     }
 }
