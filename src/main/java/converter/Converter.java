@@ -2,5 +2,5 @@ package converter;
 
 public abstract class Converter {
 
-    public abstract String convert(String input);
+    public abstract Node convert(String input);
 }

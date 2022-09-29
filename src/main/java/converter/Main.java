@@ -22,11 +22,11 @@ public class Main {
             String json  = XMLJSONConverter.convert(node);
             System.out.println(json);
         } else if (input.charAt(0) == '{') {
-            System.out.println("JSON:");
-            System.out.println("=====");
-            System.out.println(input);
-            System.out.println("XML:");
-            System.out.println("====");
+//            System.out.println("JSON:");
+//            System.out.println("=====");
+//            System.out.println(input);
+//            System.out.println("XML:");
+//            System.out.println("====");
             Node node = factory.getConverter("JSON").convert(input);
             JSONXMLConverter.convert(node);
         } else {
